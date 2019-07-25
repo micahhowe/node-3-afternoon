@@ -1,8 +1,10 @@
 module.exports = {
     create: ( req, res, next ) => {
         const dbInstance = req.app.get('db');
+        const { name, description, price, image_url } = req.body;
 
-        dbInstance.create_product()
+
+        dbInstance.create_product([ name, description, price, image_url ])
         .then( () => res.sendStatus(200) )
         .catch( err => {
             res.status(500).send({errorMessage: "O0ps someone got chocolate in my penut butter!"
@@ -12,9 +14,10 @@ module.exports = {
       },
     getOne: (req,res,next) => {
         const dbInstance = req.app.get('db');
+        const { id } = req.params;
 
-        dbInstance.read_product()
-        .then( () => res.sendStatus(200) )
+        dbInstance.read_product(id)
+        .then( product => res.status(200).send( product ) )
         .catch( err => {
             res.status(500).send({errorMessage: "OOps someone got penut butter in my chocolate!"
         });
@@ -25,7 +28,7 @@ module.exports = {
         const dbInstance = req.app.get('db');
 
         dbInstance.read_products()
-        .then( () => res.sendStatus(200) )
+        .then( products => res.status(200).send( products ) )
         .catch( err => {
             res.status(500).send({errorMessage: "OOps someone got J in my PB!"
         });
@@ -34,8 +37,10 @@ module.exports = {
     },
     update: (req,res,next) => {
         const dbInstance = req.app.get('db');
+        //The following line is destructuring params and query off of the req that is received from the database
+        const { params, query } = req;
 
-        dbInstance.update_product()
+        dbInstance.update_product([ params.id, query.desc ])
         .then( () => res.sendStatus(200) )
         .catch( err => {
             res.status(500).send({errorMessage: "Oops someone got PB in my J!"
@@ -45,11 +50,12 @@ module.exports = {
     },
     delete: (req,res,next) => {
         const dbInstance = req.app.get('db');
+        const { id } = req.params;
 
-        dbInstance.delete_product()
+        dbInstance.delete_product( id )
       .then( () => res.sendStatus(200) )
       .catch( err => {
-        res.status(500).send({errorMessage: "Whoa! Turn out we couldn't delete that PBJ"
+        res.status(500).send({errorMessage: "Whoa! Turns out we couldn't delete that PBJ"
     });
     console.log(err)
       });
